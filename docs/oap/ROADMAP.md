@@ -23,6 +23,15 @@ Smallest clean slice that still feels capable:
 
 Native store apps, triangulation, and giant archives are **future extension points**, not V0.1 blockers. The useful first version is the anomaly map + records + observations + evidence + open interfaces. See `Open_Anomaly_Project.md` § Architectural Restraint.
 
+## V0.2 — cloud persistence + alerts + free mobile reach
+
+- Dedicated Supabase project with RLS
+- Auth (magic link / OAuth)
+- Web Push delivery for nearby live events
+- Duplicate / merge heuristics (distance + time)
+- EvidenceCone queries against GEV proxies (summaries only)
+- Free installable mobile clients (PWA first; later store-listed native shells wrapping the same web app) so observers can open OAP in one tap during live events
+
 ## V0.3 — agent interoperability
 
 - Encrypted provider credential vault
