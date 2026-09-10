@@ -1,0 +1,19 @@
+{
+  "name": "Open Anomaly Project",
+  "short_name": "OAP",
+  "description": "Citizen-science network for reporting and investigating unusual real-world events.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "lang": "en",
+  "categories": ["science", "navigation", "education"],
+  "icons": [
+    {
+      "src": "/oap/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

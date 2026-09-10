@@ -1,6 +1,39 @@
 <div align="center">
 
-# 🌐 God's Eye View
+# Open Anomaly Project
+
+### Free, open-source citizen science for unusual real-world events — evidence first, conclusions last.
+
+Built as an extension of **God's Eye View**: the photorealistic globe and live world-data layers stay; OAP adds anomaly reporting, observations, investigations, and an open protocol.
+
+[Docs](docs/oap/WHAT-IT-IS.md) · [Vision](docs/oap/VISION.md) · [Architecture](docs/oap/ARCHITECTURE.md) · [Protocol](docs/oap/OAP-PROTOCOL.md) · [Roadmap](docs/oap/ROADMAP.md)
+
+</div>
+
+---
+
+## Quick start (OAP)
+
+```bash
+npm install
+npm run dev
+```
+
+Then open the app:
+
+1. Enable **Anomalies (OAP)** in the data layers list (or use the on-screen buttons).
+2. Tap **Browse anomalies** / **Report anomaly**.
+3. Optional cloud: apply `supabase/migrations/20260910_oap_v01.sql` to a **dedicated** OAP Supabase project (do not reuse unrelated shared databases).
+
+```bash
+npm run test:oap
+```
+
+---
+
+<div align="center">
+
+# 🌐 God's Eye View (upstream substrate)
 
 ### A spy-satellite simulator in your browser — then you realize the sources are public and the data is real.
 

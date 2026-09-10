@@ -28,6 +28,12 @@ import * as Cesium from 'cesium';
 export const DATA_CREDITS = [
   // ── Live sources ────────────────────────────────────────────────
   {
+    key: 'oap',
+    html:
+      'Anomalies: Open Anomaly Project community reports and historical reference cases · ' +
+      '<a href="/docs/oap/VISION.md" target="_blank" rel="noopener">OAP docs</a>',
+  },
+  {
     key: 'opensky',
     html:
       'Flights: OpenSky Network — Schäfer et al., ' +

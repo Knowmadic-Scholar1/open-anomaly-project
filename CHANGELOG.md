@@ -5,6 +5,17 @@ of current runtime behavior, see [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md
 
 ## [Unreleased]
 
+### Added
+
+- Open Anomaly Project (OAP) V0.1 foundation on the God's Eye View substrate:
+  docs under `docs/oap/`, anomaly globe layer (`oap-anomalies`), local event
+  store with seed historical/live demo cases, report/observe/hypothesis UI,
+  alert preference stubs, Supabase/PostGIS migration draft, MCP adapter
+  skeleton, and PWA manifest assets.
+- Public scope doc (`docs/oap/WHAT-IT-IS.md`) and free mobile-client plan
+  (`docs/oap/MOBILE-APPS.md`).
+- `npm run test:oap` for OAP store/privacy/credential non-exposure tests.
+
 ### Fixed
 
 - Mapped-site outages show their scheduled retry countdown and distinguish

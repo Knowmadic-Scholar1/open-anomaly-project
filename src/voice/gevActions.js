@@ -176,6 +176,10 @@ const LAYER_ALIASES = new Map([
   ['firms', 'local-firms'],
   ['fires', 'local-firms'],
   ['active fires', 'local-firms'],
+  ['anomalies', 'oap-anomalies'],
+  ['oap', 'oap-anomalies'],
+  ['oap anomalies', 'oap-anomalies'],
+  ['anomaly events', 'oap-anomalies'],
 ]);
 
 const CITY_ALIASES = new Map([
