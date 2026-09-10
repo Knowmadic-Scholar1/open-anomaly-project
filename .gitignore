@@ -19,3 +19,6 @@ pinokio/.installed
 .env
 .env.*
 !.env.example
+
+supabase/.temp/
+

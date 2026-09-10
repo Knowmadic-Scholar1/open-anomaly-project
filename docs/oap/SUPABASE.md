@@ -1,23 +1,29 @@
 # Dedicated OAP Supabase project
 
-Do **not** put OAP tables in unrelated shared databases (e.g. UGN marketplace).
+Project ref: `jbincispockpmrxtygpv`  
+API URL: `https://jbincispockpmrxtygpv.supabase.co`
 
-## Create
+Do **not** put OAP tables in unrelated shared databases.
 
-1. https://supabase.com/dashboard → New project → name `open-anomaly-project`
-2. Region close to your users (e.g. `us-east-1`)
-3. Save the database password in a password manager
-4. Database → Extensions → enable **postgis** (migration also attempts `create extension`)
-5. Apply `supabase/migrations/20260910_oap_v01.sql` (SQL editor or CLI)
-6. Copy Project URL + `anon` key into `.env` as:
+## Local setup
+
+1. Copy `.env.example` → `.env` (or keep existing `.env`)
+2. Set:
    - `VITE_OAP_SUPABASE_URL`
-   - `VITE_OAP_SUPABASE_ANON_KEY`
-7. Never expose the `service_role` key to the browser
+   - `VITE_OAP_SUPABASE_ANON_KEY` (legacy JWT anon key — preferred for `@supabase/supabase-js`)
+   - `VITE_OAP_SUPABASE_PUBLISHABLE_KEY` (new publishable key)
+3. Never commit `.env` or `service_role` keys
 
-## CLI (after `supabase login`)
+## Applied migrations (remote)
+
+- `oap_v01` — core tables + PostGIS + initial RLS
+- `oap_v01_rls_hardening` — public-read policies for the investigation graph; revoke PostgREST access to `spatial_ref_sys` / `st_estimatedextent`
+
+## CLI (optional)
 
 ```bash
-supabase link --project-ref <PROJECT_REF>
+supabase login
+supabase link --project-ref jbincispockpmrxtygpv
 supabase db push
 ```
 
