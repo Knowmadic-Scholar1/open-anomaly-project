@@ -6,7 +6,7 @@
 
 Built as an extension of **God's Eye View**: the photorealistic globe and live world-data layers stay; OAP adds anomaly reporting, observations, investigations, and an open protocol.
 
-[Docs](docs/oap/WHAT-IT-IS.md) · [Vision](docs/oap/VISION.md) · [Architecture](docs/oap/ARCHITECTURE.md) · [Protocol](docs/oap/OAP-PROTOCOL.md) · [Roadmap](docs/oap/ROADMAP.md)
+[What it is](docs/oap/WHAT-IT-IS.md) · [**Public vision (canonical)**](docs/Open_Anomaly_Project.md) · [Architecture](docs/oap/ARCHITECTURE.md) · [Protocol](docs/oap/OAP-PROTOCOL.md) · [Roadmap](docs/oap/ROADMAP.md)
 
 </div>
 

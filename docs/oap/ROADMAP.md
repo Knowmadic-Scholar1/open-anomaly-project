@@ -19,14 +19,9 @@ Smallest clean slice that still feels capable:
 
 **Explicitly deferred:** triangulation, native apps, reputation, media hosting, autonomous agents, ML forensics, global continuous detection.
 
-## V0.2 — cloud persistence + alerts + free mobile reach
+## Architectural restraint (from public vision)
 
-- Dedicated Supabase project with RLS
-- Auth (magic link / OAuth)
-- Web Push delivery for nearby live events
-- Duplicate / merge heuristics (distance + time)
-- EvidenceCone queries against GEV proxies (summaries only)
-- Free installable mobile clients (PWA + store-listed native shells wrapping the same web app) so observers can open OAP in one tap during live events
+Native store apps, triangulation, and giant archives are **future extension points**, not V0.1 blockers. The useful first version is the anomaly map + records + observations + evidence + open interfaces. See `Open_Anomaly_Project.md` § Architectural Restraint.
 
 ## V0.3 — agent interoperability
 
