@@ -17,6 +17,8 @@ Builds on God's Eye View [`SECURITY.md`](../../SECURITY.md).
 
 ## V0.1 status
 
-- Local store has no multi-user auth yet (browser-local demo mode)
-- Schema + stubs define the secure credential contract
-- Production auth requires a dedicated OAP Supabase project
+- Dedicated OAP Supabase project is provisioned (`jbincispockpmrxtygpv`)
+- Browser uses publishable/anon keys only; service role never ships to the client
+- Anonymous users can browse public events; writes require auth (RLS)
+- Local seed + localStorage remain the offline fallback
+- PostGIS `spatial_ref_sys` linter noise is **deferred** — see `SUPABASE.md` (leave alone for now; do not lock OAP domain tables)

@@ -1,8 +1,10 @@
 # Open Anomaly Project — Vision
 
-The **Open Anomaly Project (OAP)** is a free, open-source, mobile-first citizen-science network for reporting, observing, investigating, corroborating, mapping, and attempting to explain unusual real-world events.
+Canonical long-form public vision (mission, boundaries, culture, future):
 
-The **Open Anomaly Protocol** is the transport-neutral technical specification that lets humans, apps, sensors, and AI agents exchange anomaly events and evidence.
+**[`../Open_Anomaly_Project.md`](../Open_Anomaly_Project.md)**
+
+This file keeps a short checklist of operating principles for contributors.
 
 ## Core object
 

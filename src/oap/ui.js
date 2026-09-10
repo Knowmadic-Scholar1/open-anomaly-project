@@ -7,6 +7,12 @@ import * as Cesium from 'cesium';
 import oapStore from './store.js';
 import { EVENT_CATEGORIES, OBSERVED_MORPHOLOGIES, HYPOTHESIS_MECHANISMS } from './constants.js';
 import { captureObservationSensors, detectSensorCapabilities } from './sensors.js';
+import {
+  getOapAuthState,
+  isOapCloudConfigured,
+  requestOapMagicLink,
+  signOutOap,
+} from './supabaseClient.js';
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -61,8 +67,9 @@ export function initOapUi({ viewer, dataManager, layer, store = oapStore } = {})
   const fabStack = el('div', 'oap-fab-stack');
   const reportBtn = el('button', 'oap-fab', 'Report anomaly');
   const browseBtn = el('button', 'oap-fab secondary', 'Browse anomalies');
+  const accountBtn = el('button', 'oap-fab secondary', 'Account');
   const alertsBtn = el('button', 'oap-fab secondary', 'Alert prefs');
-  fabStack.append(reportBtn, browseBtn, alertsBtn);
+  fabStack.append(reportBtn, browseBtn, accountBtn, alertsBtn);
   root.appendChild(fabStack);
 
   let sheet = null;
@@ -204,12 +211,13 @@ export function initOapUi({ viewer, dataManager, layer, store = oapStore } = {})
     actions.append(useLoc, submit);
     form.appendChild(actions);
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const data = new FormData(form);
       const isLive = String(data.get('live')) === 'yes';
       const media = String(data.get('media_url') || '').trim();
-      const created = store.createEvent({
+      submit.disabled = true;
+      const { event: created, cloud } = await store.createEventAsync({
         title: data.get('title'),
         category: data.get('category'),
         description: data.get('description'),
@@ -222,8 +230,10 @@ export function initOapUi({ viewer, dataManager, layer, store = oapStore } = {})
         source_links: media && /^https?:\/\//i.test(media) ? [{ url: media, platform: 'user_link' }] : [],
       });
       if (isLive && window.confirm('Request nearby verification?')) {
-        // Preference flag only in V0.1 — push delivery comes with service worker work.
         store.setSubscriptions({ live_verification: true });
+      }
+      if (cloud?.reason === 'auth_required') {
+        window.alert('Saved on this device. Sign in under Account to publish to the shared OAP cloud.');
       }
       renderEvent(created.id);
       refreshLayer();
@@ -261,7 +271,7 @@ export function initOapUi({ viewer, dataManager, layer, store = oapStore } = {})
       const sensors = await captureObservationSensors();
       const data = new FormData(form);
       const media = String(data.get('media_url') || '').trim();
-      store.addObservation(eventId, {
+      const result = await store.addObservationAsync(eventId, {
         visibility: data.get('visibility'),
         description: data.get('description'),
         media_url: media,
@@ -271,6 +281,9 @@ export function initOapUi({ viewer, dataManager, layer, store = oapStore } = {})
         privacy_radius_m: 1000,
         public_exact: false,
       });
+      if (result?.cloud?.reason === 'auth_required') {
+        status.textContent = 'Saved locally. Sign in to publish the observation to the cloud.';
+      }
       renderEvent(eventId);
       refreshLayer();
     });
@@ -327,8 +340,54 @@ export function initOapUi({ viewer, dataManager, layer, store = oapStore } = {})
     panel.appendChild(form);
   }
 
+  async function renderAccount() {
+    const panel = openSheet();
+    panel.appendChild(el('div', 'oap-brand', 'Open Anomaly Project'));
+    panel.appendChild(el('h2', null, 'Account'));
+    if (!isOapCloudConfigured()) {
+      panel.appendChild(el('p', 'oap-help', 'Cloud not configured. Add VITE_OAP_SUPABASE_URL and VITE_OAP_SUPABASE_ANON_KEY to .env.'));
+      return;
+    }
+    const auth = await getOapAuthState();
+    if (auth.user) {
+      panel.appendChild(el('p', 'oap-help', `Signed in as ${auth.user.email || auth.user.id}`));
+      panel.appendChild(el('p', 'oap-help', 'Cloud publish is enabled for reports and observations.'));
+      const out = el('button', 'oap-btn ghost', 'Sign out');
+      out.addEventListener('click', async () => {
+        await signOutOap();
+        renderAccount();
+      });
+      panel.appendChild(out);
+      return;
+    }
+    panel.appendChild(el('p', 'oap-help', 'Browse is anonymous. Sign in with a magic link to publish events to the shared cloud.'));
+    panel.appendChild(el('p', 'oap-help', 'Enable Email auth in the OAP Supabase project if magic links fail.'));
+    const form = el('form');
+    form.appendChild(fieldInput('email', 'Email', ''));
+    const send = el('button', 'oap-btn', 'Email magic link');
+    send.type = 'submit';
+    const status = el('p', 'oap-help', '');
+    form.appendChild(send);
+    form.appendChild(status);
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      send.disabled = true;
+      status.textContent = 'Sending…';
+      try {
+        const data = new FormData(form);
+        await requestOapMagicLink(String(data.get('email') || ''));
+        status.textContent = 'Check your email for the sign-in link.';
+      } catch (error) {
+        status.textContent = error instanceof Error ? error.message : String(error);
+        send.disabled = false;
+      }
+    });
+    panel.appendChild(form);
+  }
+
   reportBtn.addEventListener('click', renderReport);
   browseBtn.addEventListener('click', renderBrowse);
+  accountBtn.addEventListener('click', () => { void renderAccount(); });
   alertsBtn.addEventListener('click', renderAlerts);
 
   if (layer?.setSelectionHandler) {

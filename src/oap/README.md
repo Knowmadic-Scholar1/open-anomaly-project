@@ -5,14 +5,15 @@ Purpose: domain logic and mobile-first UI for the Open Anomaly Project, layered 
 ## Usage
 
 - Store: `import store from './store.js'`
+- Cloud: `store.hydrateFromCloud()` / `store.createEventAsync(...)` when `.env` has `VITE_OAP_SUPABASE_*`
 - UI: `initOapUi({ viewer, dataManager, layer })` (wired from `src/main.js`)
 - Layer: `src/data/oapAnomalies.js`
 
 ## Dependencies
 
 - Cesium (via the host app)
-- Browser localStorage for V0.1 persistence fallback
-- Optional future Supabase project (schema in `supabase/migrations`)
+- `@supabase/supabase-js` for optional cloud persistence
+- Browser localStorage for offline fallback
 
 ## Tests
 

@@ -242,6 +242,19 @@ async function init() {
     dataManager.buildTogglePanel(document.getElementById('data-toggles'));
     styleManager.attachDataManager(dataManager);
     initOapUi({ viewer, dataManager, layer: oapAnomaliesLayer });
+    // Hydrate shared OAP events from the dedicated Supabase project when configured.
+    void (async () => {
+      try {
+        const { default: store } = await import('./oap/store.js');
+        const result = await store.hydrateFromCloud();
+        if (result?.ok && result.count > 0) {
+          await dataManager.setEnabled('oap-anomalies', true, { origin: 'programmatic' });
+          await oapAnomaliesLayer.update?.(viewer);
+        }
+      } catch (error) {
+        console.warn('[OAP] cloud hydrate skipped:', error);
+      }
+    })();
 
     // Initialize deterministic scene playback for social clip capture
     const sceneDirector = new SceneDirector(viewer, styleManager, dataManager);

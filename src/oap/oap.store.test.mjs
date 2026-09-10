@@ -131,3 +131,18 @@ test('MCP skeleton exposes OAP tools without vendor lock-in', () => {
   assert.ok(tools.some((tool) => tool.name === 'oap.list_active_events'));
   assert.ok(tools.some((tool) => tool.name === 'oap.add_hypothesis'));
 });
+
+test('createEventAsync falls back when cloud is not configured', async () => {
+  globalThis.localStorage = memoryStorage();
+  const store = createOapStore({ seed: [] });
+  const result = await store.createEventAsync({
+    title: 'Async local',
+    category: 'aerial',
+    latitude: 1,
+    longitude: 2,
+    description: 'x',
+  });
+  assert.match(result.event.id, /^AE-/);
+  assert.equal(result.cloud.ok, false);
+  assert.equal(result.cloud.reason, 'not_configured');
+});

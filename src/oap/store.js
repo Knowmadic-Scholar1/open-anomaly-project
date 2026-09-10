@@ -12,6 +12,8 @@ import {
   LOCAL_CREDENTIALS_META_KEY,
 } from './constants.js';
 import { toPublicObservation } from './privacy.js';
+import { fetchCloudEvents, publishCloudEvent, publishCloudObservation } from './cloud.js';
+import { isOapCloudConfigured } from './supabaseClient.js';
 
 function nowIso() {
   return new Date().toISOString();
@@ -127,10 +129,28 @@ export function createOapStore({ seed = seedEvents } = {}) {
       created_at: stamp,
       updated_at: stamp,
       last_reviewed_at: null,
+      _source: 'local',
     };
     events = [event, ...events];
     persist();
     return projectEvent(event);
+  }
+
+  /**
+   * Create locally, then attempt cloud publish when the user is signed in.
+   * Offline / anonymous always keep a local copy.
+   */
+  async function createEventAsync(input) {
+    const created = createEvent(input);
+    if (!isOapCloudConfigured()) {
+      return { event: created, cloud: { ok: false, reason: 'not_configured' } };
+    }
+    const cloud = await publishCloudEvent(created);
+    if (cloud.ok) {
+      const index = events.findIndex((row) => row.id === created.id);
+      if (index >= 0) events[index] = { ...events[index], _source: 'cloud' };
+    }
+    return { event: getEvent(created.id), cloud };
   }
 
   function updateEventStatus(id, status, note = '') {
@@ -196,7 +216,35 @@ export function createOapStore({ seed = seedEvents } = {}) {
     return {
       event: projectEvent(event),
       observation: toPublicObservation(observation, { publicExact: observation.public_exact }),
+      _observationRaw: observation,
     };
+  }
+
+  async function addObservationAsync(eventId, observationInput = {}) {
+    const result = addObservation(eventId, observationInput);
+    if (!result) return null;
+    let cloud = { ok: false, reason: 'not_configured' };
+    if (isOapCloudConfigured()) {
+      cloud = await publishCloudObservation(eventId, result._observationRaw);
+    }
+    const { _observationRaw, ...publicResult } = result;
+    return { ...publicResult, cloud };
+  }
+
+  /**
+   * Merge remote public events into the in-memory store (cloud wins on id clash).
+   */
+  async function hydrateFromCloud() {
+    if (!isOapCloudConfigured()) {
+      return { ok: false, reason: 'not_configured', count: 0 };
+    }
+    const remote = await fetchCloudEvents();
+    if (!remote.length) return { ok: true, count: 0 };
+    const byId = new Map(events.map((event) => [event.id, event]));
+    for (const event of remote) byId.set(event.id, event);
+    events = [...byId.values()].sort((a, b) => String(b.reported_at || b.created_at)
+      .localeCompare(String(a.reported_at || a.created_at)));
+    return { ok: true, count: remote.length };
   }
 
   function addHypothesis(eventId, hypothesisInput = {}) {
@@ -307,8 +355,10 @@ export function createOapStore({ seed = seedEvents } = {}) {
     listEvents,
     getEvent,
     createEvent,
+    createEventAsync,
     updateEventStatus,
     addObservation,
+    addObservationAsync,
     addHypothesis,
     addEvidence,
     getSubscriptions,
@@ -316,6 +366,8 @@ export function createOapStore({ seed = seedEvents } = {}) {
     listCredentialMetadata,
     addCredentialMetadata,
     revokeCredential,
+    hydrateFromCloud,
+    isCloudConfigured: isOapCloudConfigured,
     reload() {
       events = mergeSeedWithLocal(seed);
       return listEvents();

@@ -17,16 +17,18 @@ Do **not** put OAP tables in unrelated shared databases.
 ## Applied migrations (remote)
 
 - `oap_v01` — core tables + PostGIS + initial RLS
-- `oap_v01_rls_hardening` — public-read policies for the investigation graph; revoke PostgREST access to `spatial_ref_sys` / `st_estimatedextent`
+- `oap_v01_rls_hardening` — public-read policies for the investigation graph; revoke attempts on PostGIS catalog helpers
 
-## CLI (optional)
+## Deferred: PostGIS system-table advisory
 
-```bash
-supabase login
-supabase link --project-ref jbincispockpmrxtygpv
-supabase db push
-```
+Supabase security advisors may still flag `public.spatial_ref_sys` (RLS disabled) and related `st_estimatedextent` SECURITY DEFINER functions. These are **PostGIS internals**, not OAP domain tables.
 
-## Auth (V0.2)
+**Decision (2026-09-10):** leave them alone for V0.1.
 
-Enable Email magic link and optional Google/GitHub providers in Authentication → Providers.
+- Pros of leaving alone: no risk of breaking geospatial queries; OAP public/authenticated API for events stays unchanged.
+- Cons: linter noise; catalog/RPC endpoints remain technically exposed even if unused.
+- Optional later: `ALTER TABLE public.spatial_ref_sys ENABLE ROW LEVEL SECURITY;` (no policies = block PostgREST access to that catalog only). Do **not** apply lock-everything hardening to OAP tables.
+
+## Auth
+
+Enable **Email** (magic link) in Authentication → Providers so the in-app Account panel can publish events to the cloud. Anonymous users can still browse public events.

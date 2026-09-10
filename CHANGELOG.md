@@ -15,6 +15,9 @@ of current runtime behavior, see [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md
 - Public scope doc (`docs/oap/WHAT-IT-IS.md`) and free mobile-client plan
   (`docs/oap/MOBILE-APPS.md`).
 - `npm run test:oap` for OAP store/privacy/credential non-exposure tests.
+- Dedicated OAP Supabase project wired for anonymous public event reads; Account
+  magic-link UI for authenticated cloud publishes. PostGIS system-table
+  hardening deferred (documented in `docs/oap/SUPABASE.md`).
 
 ### Fixed
 

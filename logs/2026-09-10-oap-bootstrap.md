@@ -2,16 +2,23 @@
 
 ## Actions
 - Cloned `bilawalsidhu/gods-eye-view` into `C:\Users\earno\Projects\open-anomaly-project`
-- Moved agent workspace root to this project
-- Created branch `feature/oap-v0.1`
-- Inspected GEV architecture (vanilla JS + Cesium + Vite middleware proxies; no auth DB)
-- Confirmed connected Supabase MCP project already hosts UGN marketplace tables — will NOT apply OAP migrations there without owner approval
-- Wrote OAP docs under `docs/oap/`
-- Implemented V0.1 local store, anomaly layer, mobile UI flows, seed events, MCP skeleton, Supabase migration draft, PWA manifest
-- Added `src/oap/oap.store.test.mjs` (10 passing)
-- Re-pinned voice tool schema digests after adding `oap-anomalies` to layer enums
+- Renamed remote `origin` → `upstream` (GEV); created public GitHub repo under Knowmadic-Scholar1
+- Branch `feature/oap-v0.1` is the published default branch
+- Adopted user-authored `docs/Open_Anomaly_Project.md` as canonical public vision; short pages point to it
+- Dedicated OAP Supabase project connected (`jbincispockpmrxtygpv`); migrations `oap_v01` + `oap_v01_rls_hardening` applied
+- Seed events inserted (Starlink, Falcon vent, Austin live demo)
+- Browser cloud client: `src/oap/supabaseClient.js` + `src/oap/cloud.js`; hydrate on boot; magic-link Account UI
+- `npm run test:oap` — 11/11 pass (Node-safe `import.meta.env` guard)
 
-## Decisions pending owner input
-- Dedicated Supabase project for OAP (recommended) vs reuse of existing project
-- Credential encryption vault choice for provider secrets (Supabase Vault / pgsodium / external KMS)
-- Whether to publish a separate GitHub remote (currently still points at upstream gods-eye-view origin)
+## Deferred (leave alone for V0.1)
+- PostGIS advisor noise on `public.spatial_ref_sys` / `st_estimatedextent` — documented in `docs/oap/SUPABASE.md` and `docs/oap/SECURITY.md`
+
+## Still needed from owner
+- Enable **Email** (magic link) in Supabase Auth → Providers for cloud publish
+- Confirm local `.env` has `VITE_OAP_SUPABASE_URL` + `VITE_OAP_SUPABASE_ANON_KEY` (gitignored)
+- Optional later: Web Push, Capacitor shells, hypothesis/evidence cloud sync, geography columns on observations
+
+## Public URLs
+- https://github.com/Knowmadic-Scholar1/open-anomaly-project
+- Vision: docs/Open_Anomaly_Project.md on that branch
+- Supabase: https://jbincispockpmrxtygpv.supabase.co
